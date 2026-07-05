@@ -4,11 +4,14 @@ import random
 SIZE = 9
 EMPTY = 0
 
+
 def deep_copy(board):
     return copy.deepcopy(board)
 
+
 def create_empty_board():
     return [[EMPTY for _ in range(SIZE)] for _ in range(SIZE)]
+
 
 def is_safe(board, row, col, num):
     # Check row and column
@@ -23,6 +26,7 @@ def is_safe(board, row, col, num):
             if board[start_row + i][start_col + j] == num:
                 return False
     return True
+
 
 def fill_board(board):
     for row in range(SIZE):
@@ -39,14 +43,54 @@ def fill_board(board):
                 return False
     return True
 
-def remove_cells(board, clues):
-    attempts = SIZE * SIZE - clues
-    while attempts > 0:
-        row = random.randrange(SIZE)
-        col = random.randrange(SIZE)
-        if board[row][col] != EMPTY:
+
+def find_empty_cell(board):
+    for row in range(SIZE):
+        for col in range(SIZE):
+            if board[row][col] == EMPTY:
+                return row, col
+    return None
+
+
+def count_solutions(board, limit=1):
+    empty_cell = find_empty_cell(board)
+    if empty_cell is None:
+        return 1
+
+    row, col = empty_cell
+    total = 0
+    for candidate in range(1, SIZE + 1):
+        if is_safe(board, row, col, candidate):
+            board[row][col] = candidate
+            total += count_solutions(board, limit - total)
             board[row][col] = EMPTY
-            attempts -= 1
+            if total >= limit:
+                break
+    return total
+
+
+def has_unique_solution(board):
+    return count_solutions(board, 2) == 1
+
+
+def remove_cells(board, clues):
+    cells = [(row, col) for row in range(SIZE) for col in range(SIZE)]
+    random.shuffle(cells)
+
+    attempts = SIZE * SIZE - clues
+    for row, col in cells:
+        if attempts <= 0:
+            break
+        if board[row][col] == EMPTY:
+            continue
+
+        original_value = board[row][col]
+        board[row][col] = EMPTY
+        if not has_unique_solution(board):
+            board[row][col] = original_value
+            continue
+        attempts -= 1
+
 
 def generate_puzzle(clues=35):
     board = create_empty_board()

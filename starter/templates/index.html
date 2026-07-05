@@ -6,13 +6,35 @@
   <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
+  <script>
+    (function () {
+      const storedTheme = window.localStorage.getItem('sudoku-theme');
+      const theme = storedTheme === 'dark' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
   <h1>Sudoku Game</h1>
+  <button id="theme-toggle" class="theme-toggle" type="button" aria-pressed="false">Dark Mode</button>
   <div id="sudoku-board"></div>
+  <div class="timer" id="timer">Time: 00:00</div>
   <div class="controls">
+    <div class="control-group">
+      <label for="difficulty">Difficulty</label>
+      <select id="difficulty" name="difficulty">
+        <option value="easy">Easy</option>
+        <option value="medium">Medium</option>
+        <option value="hard">Hard</option>
+      </select>
+    </div>
     <button id="new-game">New Game</button>
     <button id="check-solution">Check Solution</button>
+    <button id="hint">Hint</button>
     <span id="message"></span>
   </div>
+  <section class="leaderboard" aria-labelledby="leaderboard-title">
+    <h2 id="leaderboard-title">Top 10 Fastest Times</h2>
+    <div id="leaderboard-list" class="leaderboard-list"></div>
+  </section>
   <script src="/static/main.js"></script>
 </body>
 </html>
